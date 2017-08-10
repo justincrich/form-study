@@ -15,7 +15,7 @@
       <h1>Full Stack Conf</h1>
     </header>
 
-    <form action="index.html" method="post" name='signup'>
+    <form action="index.html" method="post" name='signup' onsubmit='return validateForm()'>
 
       <fieldset class='basicFieldset'>
         <legend>Basic Info</legend>
@@ -29,7 +29,9 @@
         <div hidden class='emailError'></div>
 
         <label for="title">Job Role</label>
+        <div hidden class='jobError'>Please select your job role.</div>
         <select id="title" name="user_title">
+          <option value="none">Select Role</option>
           <option value="full-stack js developer">Full Stack JavaScript Developer</option>
           <option value="front-end developer">Front End Developer</option>
           <option value="back-end developer">Back End Developer</option>
@@ -37,6 +39,10 @@
           <option value="student">Student</option>
           <option value="other">Other</option>
         </select>
+        <div class='otherInputField'>
+          <label for='titleInput' id='titleLabel'>Other</label>
+          <input id='titleInput' placeholder='Your Job Role'/>
+        </div>
       </fieldset>
 
       <fieldset class="shirt">
@@ -64,12 +70,13 @@
         <div id="colors-js-puns" class="colorContainer">
           <label for="color">Color:</label>
           <select id="color">
-            <option value="cornflowerblue" >Cornflower Blue (JS Puns shirt only)</option>
-            <option value="darkslategrey">Dark Slate Grey (JS Puns shirt only)</option>
-            <option value="gold">Gold (JS Puns shirt only)</option>
-            <option value="tomato">Tomato (I &#9829; JS shirt only)</option>
-            <option value="steelblue">Steel Blue (I &#9829; JS shirt only)</option>
-            <option value="dimgrey">Dim Grey (I &#9829; JS shirt only)</option>
+            <option class='nocolor' value='no'>No Color</option>
+            <option class='puns' value="cornflowerblue" >Cornflower Blue (JS Puns shirt only)</option>
+            <option class='puns' value="darkslategrey">Dark Slate Grey (JS Puns shirt only)</option>
+            <option class='puns' value="gold">Gold (JS Puns shirt only)</option>
+            <option class='heart' value="tomato">Tomato (I &#9829; JS shirt only)</option>
+            <option class='heart' value="steelblue">Steel Blue (I &#9829; JS shirt only)</option>
+            <option class='heart' value="dimgrey">Dim Grey (I &#9829; JS shirt only)</option>
           </select>
         </div>
       </fieldset>
@@ -85,6 +92,9 @@
         <label><input class='activityInput' type="checkbox" name="build_tools"> Build tools Workshop — Wednesday 9am-12pm, $100</label>
         <label><input class='activityInput' type="checkbox" name="npm"> npm Workshop — Wednesday 1pm-4pm, $100</label>
       </fieldset>
+      <div>
+        Total: $<span id='activityAmount'>0</span>
+      </div>
       <fieldset id='paymentFieldset'>
         <legend>Payment Info</legend>
 
@@ -156,5 +166,6 @@
 	</div>
   <!-- Scripts -->
   <script src="./js/app.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </body>
 </html>

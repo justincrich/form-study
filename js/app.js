@@ -1,13 +1,17 @@
-
+//holds dropdown colors
+var holder;
+document.getElementsByClassName('otherInputField')[0].style.display = 'none';
  document.addEventListener("DOMContentLoaded",(e)=>{
+   $("#color").val('');
    //SETUP ON LOAD
    /*UC1: SELECT "NAME" INPUT FIELD ON LOAD*/
    //select name input when page is loaded
    document.getElementById('name').focus();
-   let activities = new Activities();
+
 
    /*UC2: ADD INPUT DYNAMICALLY ON "OTHER"*/
    //Insert field when 'other' is selected from dropdown
+
    title.addEventListener('change',(e)=>{
      const basicFieldset = document.getElementsByClassName('basicFieldset')[0];
      let titleLabel;
@@ -16,22 +20,9 @@
      let selection = e.currentTarget.options[e.currentTarget.selectedIndex].text;
      if(selection === 'Other'){
        //only add a other field if there's not already one on the DOM
-       if(!document.getElementById('titleLabel')){
-         //create+add label
-         titleLabel = document.createElement('label');
-         titleLabel.setAttribute('for','titleInput');
-         titleLabel.setAttribute('id','titleLabel');
-         titleLabel.innerHTML = 'Other';
-         basicFieldset.appendChild(titleLabel);
-
-         //create+add input
-         titleInput = document.createElement('input');
-         titleInput.setAttribute('id','titleInput');
-         titleInput.setAttribute('placeholder','Your Job Role')
-         basicFieldset.appendChild(titleInput);
-       }
+       document.getElementsByClassName('otherInputField')[0].style.display = 'block';
      }else{
-
+       document.getElementsByClassName('otherInputField')[0].style.display = 'none';
        titleLabel = document.getElementById('titleLabel');
        titleInput = document.getElementById('titleInput');
        if(titleLabel){
@@ -49,50 +40,62 @@
        1:{
          name:"Theme - JS Puns",
          sizes:['s','m','l','xl'],
-         colors:['cornflowerblue', 'darkslategrey', 'gold']
+         colors:['cornflowerblue', 'darkslategrey', 'gold'],
+         matchingClass:'puns'
        },
        2:{
          name:"Theme - I ♥ JS",
          sizes:['s','m','l','xl'],
-         colors:['tomato', 'steelblue', 'dimgrey']
+         colors:['tomato', 'steelblue', 'dimgrey'],
+         matchingClass:'heart'
        }
      };
      return shirts[id];
    }
    //logic to dynamically set dropdown info
    const designDropdown = document.getElementById('design');
+
    designDropdown.addEventListener('change',(e)=>{
      const colorDropdown = document.getElementById('color');
      const sizeDropdown = document.getElementById('size');
-     let selection = getShirts(e.currentTarget.selectedIndex);
+     //let selection = getShirts(e.currentTarget.selectedIndex);
+     $('.nocolor').hide();
 
-     //Show the right colors for the available design
-     Array.from(colorDropdown.children).forEach((element,index,arr)=>{
-       //if(element.getAttribute('value'))
-       if(selection===undefined){
-         element.style.display = '';
-       }else{
-         //show appropriate shirt colors
-         let color = element.getAttribute('value');
-         if(selection.colors.indexOf(color) === -1){
-           //console.log('hide');
-           colorDropdown.children[index].style.display = 'none';
-         }else{
-           //console.log('show');
-           colorDropdown.children[index].style.display = '';
-         }
-       }
-     });
+
+     if(e.currentTarget.selectedIndex===2){
+       //handle case where the holder already has heart type shirts
+       $('.puns').hide();
+       $('.nocolor').hide();
+       $('.heart').show();
+       $("#color").val('');
+
+     }else if (e.currentTarget.selectedIndex===1){
+       //handle case where the holder already has pun type shirts
+
+       //save heart class colors
+       $('.puns').show();
+       $('.nocolor').hide();
+       $('.heart').hide();
+       $("#color").val('');
+     }else{
+       $('.puns').show();
+       $('.nocolor').show();
+       $('.heart').show();
+       $("#color").val('');
+     }
+
 
    });
 
    /*UC4: ACTIVITY REGISTRATION LOGIC*/
+   let activities = new Activities();
    const activityRegistration = document.getElementsByClassName('activities')[0];
 
    activityRegistration.addEventListener('click',(e)=>{
     //add or remove checked class to the event queue
      if(e.target.type === 'checkbox'){
        let classSelected = e.target.name;
+
        if(e.target.checked){
          activities.attending.push(classSelected);
 
@@ -102,9 +105,10 @@
        let event = activities.classes[classSelected];
        let options = Array.from(activityRegistration.children);
        options.shift();//remove legend
-
+       options.shift();//remove error
        //iterate through unselected classes and disable if they overlap
        options.forEach((child,index,arr)=>{
+         console.log(child);
          //check against regestered classes with Activities method checkAvailability
          canAdd = activities.checkAvailability(activities.classes[child.firstElementChild.name]);
          if(canAdd){
@@ -113,7 +117,12 @@
            child.firstElementChild.disabled = true;
          }
        });
-
+       //sum up total for activities and display
+       let sum = 0;
+       activities.attending.forEach(activity=>{
+         sum+=activities.classes[activity].price;
+       });
+       document.getElementById('activityAmount').innerHTML = sum;
      }
    });
 
@@ -129,23 +138,13 @@
 
    /*UC: 6 Misc Form Validation*/
   //toggle required whenever item is clicked
-  const btn = document.getElementById('submitButton');
-  btn.addEventListener('click',(e)=>{
-    e.preventDefault();
-    //validate name input exists
-    const name = document.getElementById('name');
-    let nameValid = validate(name);
-    //validate email input
-    const mail = document.getElementById('mail');
-    let mailValid = validate(mail);
-    const act = document.getElementById('activities');
-    let actValid = validate(act);
-    const pay = document.getElementById('paymentFieldset');
-    let payValid = validate(pay);
-    console.log('pay valid', payValid);
-
-
-  });
+  // const btn = document.getElementById('submitButton');
+  // btn.addEventListener('click',(e)=>{
+  //
+  //
+  //
+  //
+  // });
 
 
 
@@ -227,14 +226,50 @@
    const paymentTypes = document.getElementsByClassName('paymentTypes');
    Array.from(paymentTypes).forEach(element=>{
      if(element.id === type){
-       element.style.display = 'inherit';
+      //  element.style.display = 'inherit';
+      $(element).show();
      }else{
-       element.style.display = 'none';
+      //  element.style.display = 'none';
+      $(element).hide();
      }
    });
  }
 
- let validate = (element)=>{
+function validateForm() {
+
+  //validate name input exists
+  const name = document.getElementById('name');
+  let nameValid = checkInput(name);
+
+  //validate email input
+  const mail = document.getElementById('mail');
+  let mailValid = checkInput(mail);
+
+  const act = document.getElementById('activities');
+  let actValid = checkInput(act);
+
+  const pay = document.getElementById('paymentFieldset');
+  let payValid = checkInput(pay);
+
+  const jobTitle = document.getElementById('title');
+  console.log(jobTitle);
+  let titleValid = checkInput(jobTitle);
+
+  //check all validation before allowing form to continue
+  console.log('pay valid?',payValid);
+  if(nameValid && mailValid && actValid && payValid && titleValid){
+    return true;
+  }else{
+    return false;
+  }
+
+
+
+
+  console.log('pay valid', payValid);
+}
+
+ let checkInput = (element)=>{
 
    switch(element.id){
      case 'name':{
@@ -289,19 +324,56 @@
      }
      break;
      case 'paymentFieldset':{
+       document.getElementsByClassName('creditCardError')[0].innerHTML = '';
        let inputs = element.getElementsByTagName('input');
-       let valid = true;
+       let isNum = true;//holds entry if element can be converted to number
+       let isBlank = false; //holds val if entry is blank
        Array.from(inputs).forEach(input=>{
+         let fName = '';
+         switch(input.id){
+           case 'cc-num':{
+             fName='credit card number';
+           }
+           break;
+           case 'zip':{
+             fName='zip code';
+           }
+           break;
+           case 'cvv':{
+             fName='CVV';
+           }
+           break;
+           default:{
+             fName='';
+           }
+         }
          if(isNaN(input.value) === true){
-           valid = false;
+           isNum = false;
+           document.getElementsByClassName('creditCardError')[0].innerHTML += 'Your '+fName+' may only be a number.<br>'
+         }
+         if(input.value === null || input.value === ''){
+           isBlank = true;
+           document.getElementsByClassName('creditCardError')[0].innerHTML += 'Please provide your '+fName+'<br>'
          }
        });
-       if(valid===false){
+       if(!isNum || isBlank){
          document.getElementsByClassName('creditCardError')[0].style.display='block';
+         return false;
        }else{
          document.getElementsByClassName('creditCardError')[0].style.display='none';
+         return true;
        }
-       return valid;
+
+     }
+     break;
+     case 'title':{
+        if(element.value === 'none'){
+          document.getElementsByClassName('jobError')[0].style.display='block';
+          return false;
+        }else{
+          document.getElementsByClassName('jobError')[0].style.display='none';
+          return true;
+        }
      }
      break;
      default:{
