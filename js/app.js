@@ -1,5 +1,6 @@
 //holds dropdown colors
 var holder;
+let closet = document.getElementById('color').cloneNode(true);
 document.getElementsByClassName('otherInputField')[0].style.display = 'none';
  document.addEventListener("DOMContentLoaded",(e)=>{
    $("#color").val('');
@@ -54,34 +55,33 @@ document.getElementsByClassName('otherInputField')[0].style.display = 'none';
    }
    //logic to dynamically set dropdown info
    const designDropdown = document.getElementById('design');
-
+   $("#colors-js-puns").hide();
    designDropdown.addEventListener('change',(e)=>{
      const colorDropdown = document.getElementById('color');
      const sizeDropdown = document.getElementById('size');
-     //let selection = getShirts(e.currentTarget.selectedIndex);
-     $('.nocolor').hide();
-
+     colorDropdown.innerHTML = '';
 
      if(e.currentTarget.selectedIndex===2){
        //handle case where the holder already has heart type shirts
-       $('.puns').hide();
-       $('.nocolor').hide();
-       $('.heart').show();
-       $("#color").val('');
 
+        Array.from(closet.getElementsByClassName('heart')).forEach(element=>{
+            console.log(element);
+           colorDropdown.appendChild(element.cloneNode(true));
+        });
+        $("#colors-js-puns").show();
      }else if (e.currentTarget.selectedIndex===1){
        //handle case where the holder already has pun type shirts
 
        //save heart class colors
-       $('.puns').show();
-       $('.nocolor').hide();
-       $('.heart').hide();
-       $("#color").val('');
+      //  $('.puns').show();
+      //  $('.heart').hide();
+      Array.from(closet.getElementsByClassName('puns')).forEach(element=>{
+          console.log(element);
+         colorDropdown.appendChild(element.cloneNode(true));
+      });
+      $("#colors-js-puns").show();
      }else{
-       $('.puns').show();
-       $('.nocolor').show();
-       $('.heart').show();
-       $("#color").val('');
+       $("#colors-js-puns").hide();
      }
 
 
