@@ -250,14 +250,13 @@ function validateForm() {
 
   const pay = document.getElementById('paymentFieldset');
   let payValid = checkInput(pay);
-
+  const payField = document.getElementById('payment').selectedIndex;
   const jobTitle = document.getElementById('title');
-  console.log(jobTitle);
   let titleValid = checkInput(jobTitle);
 
   //check all validation before allowing form to continue
   console.log('pay valid?',payValid);
-  if(nameValid && mailValid && actValid && payValid && titleValid){
+  if(nameValid && mailValid && actValid && (payValid || payField>1) && titleValid){
     return true;
   }else{
     return false;
